@@ -1,25 +1,19 @@
-import { IsEnum, IsPhoneNumber } from '@nestjs/class-validator';
-import { IsEmail, IsString } from '@nestjs/class-validator';
-
-enum Role {
-  ADMIN = 'admin',
-  USER = 'user',
-  CLIENT = 'client'
-}
+import { IsEnum, IsPhoneNumber, IsString, IsEmail } from '@nestjs/class-validator';
+import { Role } from '@prisma/client';
 
 export class CreateUserDto {
   @IsString()
-  name: String;
+  name: string;
 
   @IsEmail()
-  email: String;
+  email: string;
 
   @IsString()
-  password: String;
+  password: string;
 
   @IsPhoneNumber()
-  phone: String;
+  phone: string;
 
   @IsEnum(Role)
-  role: Role
+  role: Role;
 }
