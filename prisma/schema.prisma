@@ -13,8 +13,108 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+enum Status {
+  APROVADO
+  NEGOCIANDO
+  REPROVADO
+}
+
+enum Cor {
+  PRETO
+  BRANCO
+}
+
+enum Role {
+  ADMIN
+  USER
+  CLIENT
+}
+
+model Usuario {
+  id           String  @id @default(uuid())
+  email        String  @unique
+  senha        String
+  telefone     String
+  nome         String
+  email_amazon String?
+  senha_amazon String?
+  role         Role
+
+  orcamentos Orcamento[]
+  produtos   UsuarioProduto[]
+}
+
+model Orcamento {
+  id                  String    @id @default(uuid())
+  data_orcamento      DateTime  @default(now())
+  valor_total         Float
+  orcado              Boolean
+  status              Status
+  prazo_final         DateTime?
+  garantia_instalacao Int?
+  data_negociando     DateTime?
+  data_aprovado       DateTime?
+  data_reprovado      DateTime?
+
+  usuario   Usuario    @relation(fields: [usuarioId], references: [id])
+  usuarioId String
+  ambientes Ambiente[]
+}
+
+model Produto {
+  id          Int       @id @default(autoincrement())
+  nome        String
+  cor         Cor
+  link_video  String?
+  garantia    Int
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+  categoriaId Int
+
+  ambientes AmbienteProduto[]
+  usuarios  UsuarioProduto[]
+}
+
+model Ambiente {
+  id             Int     @id @default(autoincrement())
+  nome           String
+  descricao      String
+  foto           String?
+  preco_ambiente Float
+
+  orcamento   Orcamento         @relation(fields: [orcamentoId], references: [id])
+  orcamentoId String
+  produtos    AmbienteProduto[]
+}
+
+model Categoria {
+  id   Int    @id @default(autoincrement())
+  nome String
+
+  produtos Produto[]
+}
+
+model UsuarioProduto {
+  usuarioId String
+  produtoId Int
+  Usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  Produto   Produto @relation(fields: [produtoId], references: [id])
+
+  @@id([usuarioId, produtoId])
+}
+
+model AmbienteProduto {
+  produtoId         Int
+  ambienteId        Int
+  valor_produto     Float
+  quantidade        Int
+  valor_eletricista Float
+  valor_instalacao  Float
+  valor_material    Float
+  prazo_entrega     DateTime
+  valor_final       Float
+
+  Produto  Produto  @relation(fields: [produtoId], references: [id])
+  Ambiente Ambiente @relation(fields: [ambienteId], references: [id])
+
+  @@id([produtoId, ambienteId])
 }
