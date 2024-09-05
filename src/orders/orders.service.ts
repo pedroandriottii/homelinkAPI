@@ -6,9 +6,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class OrdersService {
   constructor(private prisma: PrismaService) { }
-  create(createOrderDto: CreateOrderDto) {
-
-    const createdOrder = this.prisma.customerOrder.create({
+  async create(createOrderDto: CreateOrderDto) {
+    const createdOrder = await this.prisma.customerOrder.create({
       data: {
         ...createOrderDto,
         status: "GENERATING",
@@ -17,19 +16,34 @@ export class OrdersService {
     return createdOrder;
   }
 
-  findAll() {
-    return this.prisma.customerOrder.findMany();
+  async findAll() {
+    return await this.prisma.customerOrder.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  async findOne(id: string) {
+    const order = await this.prisma.customerOrder.findUnique({
+      where: {
+        id
+      }
+    });
+    if (!order) {
+      throw new Error(`Order with id ${id} not found`);
+    }
+    return order;
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  async update(id: string, updateOrderDto: UpdateOrderDto) {
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async remove(id: string) {
+    const deletedOrder = await this.prisma.customerOrder.delete({
+      where: {
+        id
+      }
+    })
+    if (!deletedOrder) {
+      throw new Error(`Order with id ${id} not found`);
+    }
+    return deletedOrder;
   }
 }

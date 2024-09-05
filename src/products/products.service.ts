@@ -5,27 +5,41 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ProductsService {
-  constructor(private prismaService: PrismaService) { }
-  create(createProductDto: CreateProductDto) {
-    const createdProduct = this.prismaService.product.create({
+  constructor(private prisma: PrismaService) { }
+  async create(createProductDto: CreateProductDto) {
+    const createdProduct = await this.prisma.product.create({
       data: createProductDto
     })
     return createdProduct;
   }
 
-  findAll() {
-    return this.prismaService.product.findMany();
+  async findAll() {
+    return await this.prisma.product.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: number) {
+    const product = await this.prisma.product.findUnique({
+      where: { id }
+    })
+    if (!product) {
+      throw new Error(`Product with id ${id} not found`);
+    }
+    return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
+  async update(id: number, updateProductDto: UpdateProductDto) {
     return `This action updates a #${id} product`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: number) {
+    const deletedProduct = await this.prisma.product.delete({
+      where: {
+        id
+      }
+    })
+    if (!deletedProduct) {
+      throw new Error(`Product with id ${id} not found`);
+    }
+    return deletedProduct;
   }
 }

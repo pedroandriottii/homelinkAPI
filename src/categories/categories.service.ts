@@ -5,27 +5,37 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private prismaService: PrismaService) { }
-  create(createCategoryDto: CreateCategoryDto) {
-    const createdCategory = this.prismaService.category.create({
+  constructor(private prisma: PrismaService) { }
+  async create(createCategoryDto: CreateCategoryDto) {
+    const createdCategory = await this.prisma.category.create({
       data: createCategoryDto
     })
     return createdCategory;
   }
 
-  findAll() {
-    return this.prismaService.category.findMany();
+  async findAll() {
+    return await this.prisma.category.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: number) {
+    const category = await this.prisma.category.findUnique({
+      where: { id }
+    })
+    if (!category) {
+      throw new Error(`Category with id ${id} not found`);
+    }
+    return category
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
     return `This action updates a #${id} category`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number) {
+    const deletedCategory = await this.prisma.category.delete({ where: { id } })
+    if (!deletedCategory) {
+      throw new Error(`Category with id ${id} not found`);
+    }
+    return deletedCategory;
   }
 }
