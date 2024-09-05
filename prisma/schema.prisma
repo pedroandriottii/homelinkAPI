@@ -36,8 +36,7 @@ model User {
   amazonPassword String?
   role           Role
 
-  orders   CustomerOrder[]
-  products UserProduct[]
+  orders CustomerOrder[]
 }
 
 model CustomerOrder {
@@ -67,7 +66,6 @@ model Product {
   categoryId    Int
 
   rooms RoomProduct[]
-  users UserProduct[]
 }
 
 model Room {
@@ -87,15 +85,6 @@ model Category {
   name String
 
   products Product[]
-}
-
-model UserProduct {
-  userId    String
-  productId Int
-  user      User    @relation(fields: [userId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
-
-  @@id([userId, productId])
 }
 
 model RoomProduct {
