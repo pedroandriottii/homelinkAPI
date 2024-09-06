@@ -28,8 +28,8 @@ export class RoomsService {
     return createdRoom;
   }
 
-  findAll() {
-    return this.prisma.room.findMany();
+  async findAll() {
+    return await this.prisma.room.findMany();
   }
 
   async findOne(id: number) {

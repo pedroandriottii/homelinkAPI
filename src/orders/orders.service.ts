@@ -11,6 +11,7 @@ export class OrdersService {
       data: {
         ...createOrderDto,
         status: "GENERATING",
+        totalValue: 0.0,
       }
     })
     return createdOrder;

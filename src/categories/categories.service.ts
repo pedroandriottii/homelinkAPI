@@ -6,7 +6,18 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class CategoriesService {
   constructor(private prisma: PrismaService) { }
+
   async create(createCategoryDto: CreateCategoryDto) {
+    const categoryExists = await this.prisma.category.findFirst({
+      where: {
+        name: createCategoryDto.name
+      }
+    })
+
+    if (categoryExists) {
+      throw new Error(`Category with name ${createCategoryDto.name} already exists`);
+    }
+
     const createdCategory = await this.prisma.category.create({
       data: createCategoryDto
     })

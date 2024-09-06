@@ -61,6 +61,7 @@ model Product {
   name          String
   color         Color
   videoUrl      String?
+  brand         String?
   assuranceDate DateTime?
   category      Category  @relation(fields: [categoryId], references: [id])
   categoryId    Int
@@ -71,7 +72,7 @@ model Product {
 model Room {
   id          Int     @id @default(autoincrement())
   name        String
-  description String
+  description String?
   photoUrl    String?
   totalValue  Float
 

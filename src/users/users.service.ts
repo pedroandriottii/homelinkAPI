@@ -15,6 +15,20 @@ export class UsersService {
     const hashedPassword = await bcrypt.hash(createUserDto.password, roundsOfHashing)
     createUserDto.password = hashedPassword;
     createUserDto.role = "USER";
+
+    const userExists = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: createUserDto.email },
+          { phone: createUserDto.phone }
+        ]
+      }
+    })
+
+    if (userExists) {
+      throw new Error(`User with email ${createUserDto.email} or phone ${createUserDto.phone} already exists`);
+    }
+
     const createdUser = await this.prisma.user.create({
       data: createUserDto,
     });
