@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto, UpdateUserRoleDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 
@@ -16,24 +16,24 @@ export class UsersService {
     createUserDto.password = hashedPassword;
     createUserDto.role = "USER";
 
-    const userExists = await this.prisma.user.findFirst({
-      where: {
-        OR: [
-          { email: createUserDto.email },
-          { phone: createUserDto.phone }
-        ]
+    try {
+      const createdUser = await this.prisma.user.create({
+        data: createUserDto,
+      });
+      return createdUser
+    } catch (error) {
+      console.log(error);
+      if (error.code === 'P2002') {
+        if (error.meta.target.includes('email')) {
+
+          throw new ConflictException(`Email já cadastrado.`);
+        }
+        if (error.meta.target.includes('phone')) {
+          throw new ConflictException(`Telefone já cadastrado.`);
+        }
       }
-    })
-
-    if (userExists) {
-      throw new Error(`User with email ${createUserDto.email} or phone ${createUserDto.phone} already exists`);
+      throw new InternalServerErrorException(`Erro Interno do Servidor`);
     }
-
-    const createdUser = await this.prisma.user.create({
-      data: createUserDto,
-    });
-
-    return createdUser
   }
 
   async findAll() {
@@ -45,7 +45,7 @@ export class UsersService {
       where: { id }
     })
     if (!user) {
-      throw new Error(`User with id ${id} not found`);
+      throw new NotFoundException(`Usuário não encontrado.`);
     }
     return user;
   }
@@ -54,6 +54,9 @@ export class UsersService {
     return `This action updates a #${id} user`;
   }
 
+  // async updateRole(id: string, UpdateUserRoleDto: UpdateUserRoleDto) {
+  // }
+
   async remove(id: string) {
     const deletedUser = await this.prisma.user.delete({
       where: {
@@ -61,7 +64,7 @@ export class UsersService {
       }
     })
     if (!deletedUser) {
-      throw new Error(`User with id ${id} not found`);
+      throw new NotFoundException(`Usuário não encontrado.`);
     }
     return;
   }

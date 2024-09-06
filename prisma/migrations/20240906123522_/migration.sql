@@ -44,6 +44,7 @@ CREATE TABLE "Product" (
     "name" TEXT NOT NULL,
     "color" "Color" NOT NULL,
     "videoUrl" TEXT,
+    "brand" TEXT,
     "assuranceDate" TIMESTAMP(3),
     "categoryId" INTEGER NOT NULL,
 
@@ -54,7 +55,7 @@ CREATE TABLE "Product" (
 CREATE TABLE "Room" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
+    "description" TEXT,
     "photoUrl" TEXT,
     "totalValue" DOUBLE PRECISION NOT NULL,
     "orderId" TEXT NOT NULL,
@@ -68,14 +69,6 @@ CREATE TABLE "Category" (
     "name" TEXT NOT NULL,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "UserProduct" (
-    "userId" TEXT NOT NULL,
-    "productId" INTEGER NOT NULL,
-
-    CONSTRAINT "UserProduct_pkey" PRIMARY KEY ("userId","productId")
 );
 
 -- CreateTable
@@ -104,12 +97,6 @@ ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("cat
 
 -- AddForeignKey
 ALTER TABLE "Room" ADD CONSTRAINT "Room_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "CustomerOrder"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "UserProduct" ADD CONSTRAINT "UserProduct_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "UserProduct" ADD CONSTRAINT "UserProduct_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "RoomProduct" ADD CONSTRAINT "RoomProduct_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
