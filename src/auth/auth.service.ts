@@ -24,9 +24,10 @@ export class AuthService {
             throw new UnauthorizedException(`Senha inválida.`);
         }
 
-
         return {
             accessToken: this.jwtService.sign({ userId: user.id, role: user.role }),
+            userId: user.id,
+            userRole: user.role
         }
     }
 }
